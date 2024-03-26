@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suhail Games</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        canvas {
+            border: 1px solid black;
+        }
+        button {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Suhail Games</h1>
+    <button id="ticTacToe">Tic Tac Toe</button>
+    <button id="flappy">Flappy</button>
+    <button id="dinosaur">Jumping Dinosaur</button>
+    <button id="instagram">Instagram</button>
+    <div id="gameContainer"></div>
+    <script>
+        const games = {
+            ticTacToe: {
+                name: 'Tic Tac Toe',
+                init: function() {
+                    this.board = Array(3).fill(Array(3).fill(null));
+                    this.currentPlayer = 'X';
+                    this.gameOver = false;
+                },
+                render: function() {
+                    const gameContainer = document.getElementById('gameContainer');
+                    gameContainer.innerHTML = '';
+                    this.board.forEach((row, rowIndex) => {
+                        const rowElement = document.createElement('div');
+                        rowElement.style.display = 'flex';
+                        row.forEach((cell, cellIndex) => {
+                            const cellElement = document.createElement('button');
+                            cellElement.textContent = cell || '';
+                            cellElement.addEventListener('click', () => {
+                                if (!this.gameOver && !cell) {
+                                    this.makeMove(rowIndex, cellIndex);
+                                }
+                            });
+                            rowElement.appendChild(cellElement);
+                        });
+                        gameContainer.appendChild(rowElement);
+                    });
+                },
+                makeMove: function(row, col) {
+                    this.board[row][col] = this.currentPlayer;
+                    this.render();
+                    this.checkGameOver();
+                    this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
+                },
+                checkGameOver: function() {
+                    const lines = [
+                        this.board,
+                        this.board[0].map((_, col) => this.board.map(row => row[col])),
+                        this.board[0].map((_, index) => this.board.map(row => row[index])),
+                        this.board[0].map((_, index) => this.board.map((row, rowIndex) => row[rowIndex - index])),
+                        this.board[0].map((_, index) => this.board.map((row, rowIndex) => row[rowIndex - index])),
+                    ];
+                    for (const line of lines) {
+                        if (line.every(cell => cell === 'X') || line.every(cell => cell === 'O')) {
+                            this.gameOver = true;
+                            alert(`Player ${this.currentPlayer === 'X' ? 'O' : 'X'} wins!`);
+                            return;
+                        }
+                    }
+                    if (!this.board.some(row => row.some(cell => !cell))) {
+                        this.gameOver = true;
+                        alert('It\'s a tie!');
+                    }
+                },
+            },
+            flappy: {
+                name: 'Flappy',
+                init: function() {
+                    this.birdY = 200;
+                    this.birdVelocity = 0;
+                    this.obstacles = [];
+                },
+                render: function() {
+                    const gameContainer = document.getElementById('gameContainer');
+                    const canvas = document.createElement('canvas');
+                    canvas.width= 480;
+                    canvas.height = 320;
+                    gameContainer.appendChild(canvas);
+                    const context = canvas.getContext('2d');
+                    const flappyGravity = 0.9;
+                    const flappyJump = -12;
+                    const flappyWidth = 50;
+                    const flappyHeight = 50;
+                    const groundY = 300;
+                    let flappyScore = 0;
+                    let flappyTimer = 500;
+                    const pipeWidth = 50;
+                    const pipeHeight =  Math.floor(Math.random() * 200) + 100;
+                    const pipeX = 500;
+                    const pipeY = 0;
+                    let flappyJumpCount = 0;
+
+                    function drawFlappy() {
+                        context.fillStyle = 'blue';
+                        context.fillRect(20, flappyY, flappyWidth, flappyHeight);
+                    }
+
+                    function drawGround() {
+                        context.fillStyle = 'brown';
+                        context.fillRect(0, groundY, canvas.width, 100);
+                    }
+
+                    function drawPipes() {
+                        context.fillStyle = 'green';
+                        context.fillRect(pipeX, pipeY, pipeWidth, pipeHeight);
+                        context.fillRect(pipeX, pipeHeight + 100, pipeWidth, canvas.height);
+                    }
+
+                    function updateFlappy() {
+                        if (flappyTimer === 0) {
+                            pipeHeight =  Math.floor(Math.random() * 200) + 100;
+                            pipeX = 500;
+                            flappyTimer = 1000;
+                        }
+                        flappyTimer--;
+                        flappyY += flappyVelocity;
+                        flappyVelocity += flappyGravity;
+                        if (
+                            flappyX + flappyWidth >= pipeX &&
+                            flappyX <= pipeX + pipeWidth &&
+                            (flappyY + flappyHeight >= pipeY || flappyY <= pipeHeight + 100)
+                        ) {
+                            alert('Game Over');
+                            location.reload();
+                        }
+                        if (flappyY + flappyHeight >= groundY - 10) {
+                            flappyX = 20;
+                            flappyY = 200;
+                            flappyVelocity = 0;
+                            flappyTimer = 1000;
+                            pipeX = 500;
+                            pipeHeight =  Math.floor(Math.random() * 200) + 100;
+                            flappyObstacles = [];
+                            flappyScore = 0;
+                        }
+                        context.clearRect(0, 0, canvas.width, canvas.height);
+                        drawFlappy();
+                        drawGround();
+                        drawPipes();
+                        flappyJumpCount++;
+                        if (flappyJumpCount % 50 === 0 && flappyY < groundY - 100) {
+                            flappyVelocity = flappyJump;
+                            flappyJumpCount = 0;
+                        }
+                    }
+
+                    function jump() {
+                        if (flappyVelocity === 0) {
+                            flappyVelocity = flappyJump;
+                        }
+                    }
+
+                    canvas.addEventListener('click', jump);
+
+                    setInterval(updateFlappy, 10);
+                },
+            },
+            dinosaur: {
+                name: 'Dinosaur',
+                init: function() {
+                    this.dinoY = 200;
+                    this.dinoVelocity = 0;
+                    this.obstacles = [];
+                },
+                render: function() {
+                    const gameContainer = document.getElementById('gameContainer');
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 480;
+                    canvas.height = 320;
+                    gameContainer.appendChild(canvas);
+                    const context =canvas.getContext('2d');
+                    const dinosaurGravity = 0.5;
+                    const dinosaurJump = -10;
+                    const dinosaurWidth = 50;
+                    const dinosaurHeight = 50;
+                    let dinosaurTimer = 500;
+                    const obstacleWidth = 50;
+                    const obstacleHeight = 100;
+
+                    function drawDinosaur() {
+                        context.fillStyle = 'green';
+                        context.fillRect(20, dinosaurY, dinosaurWidth, dinosaurHeight);
+                    }
+
+                    function createObstacle() {
+                        const obstacle = {
+                            x: 500,
+                            y: Math.floor(Math.random() * (groundY - obstacleHeight - 100)) + 100,
+                            width: obstacleWidth,
+                            height: obstacleHeight,
+                        };
+                        obstacles.push(obstacle);
+                    }
+
+                    function drawObstacles() {
+                        obstacles.forEach(function(obstacle) {
+                            context.fillStyle = 'red';
+                            context.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                        });
+                    }
+
+                    function updateDinosaur() {
+                        if (dinosaurTimer === 0) {
+                            createObstacle();
+                            dinosaurTimer = 1000;
+                        }
+                        dinosaurTimer--;
+                        dinosaurY += dinosaurVelocity;
+                        dinosaurVelocity += dinosaurGravity;
+                        if (
+                            dinosaurX + dinosaurWidth >= obstacles[0].x &&
+                            dinosaurX <= obstacles[0].x + obstacleWidth &&
+                            (dinosaurY + dinosaurHeight >= obstacles[0].y || dinosaurY <= obstacles[0].y - 10)
+                        ) {
+                            alert('Game Over');
+                        }
+                        context.clearRect(0, 0, canvas.width, canvas.height);
+                        drawDinosaur();
+                        drawObstacles();
+                    }
+
+                    function jump() {
+                        if (dinosaurVelocity === 0) {
+                            dinosaurVelocity = dinosaurJump;
+                        }
+                    }
+
+                    document.addEventListener('keypress', function(event) {
+                        if (event.keyCode === 32) {
+                            jump();
+                        }
+                    });
+
+                    setInterval(updateDinosaur, 10);
+                },
+            },
+            instagram: {
+                name: 'Instagram',
+                init: function() {
+                    console.log('Init Instagram...');
+                },
+                render: function() {
+                    console.log('Render Instagram...');
+                    const gameContainer = document.getElementById('gameContainer');
+                    const link = document.createElement('a');
+                    link.href = 'https://www.instagram.com/suhailgames/';
+                    link.textContent = 'Instagram';
+                    gameContainer.appendChild(link);
+                },
+            },
+        };
+
+        document.getElementById(Object.keys(games)[0]).addEventListener('click', () => {
+            clearGameContainer();
+            games[Object.keys(games)[0]].init();
+            games[Object.keys(games)[0]].render();
+        });
+
+        document.getElementById(Object.keys(games)[1]).addEventListener('click', () => {
+            clearGameContainer();
+            games[Object.keys(games)[1]].init();
+            games[Object.keys(games)[1]].render();
+        });
+
+        document.getElementById(Object.keys(games)[2]).addEventListener('click', () => {
+            clearGameContainer();
+            games[Object.keys(games)[2]].init();
+            games[Object.keys(games)[2]].render();
+        });
+
+        document.getElementById(Object.keys(games)[3]).addEventListener('click', () => {
+            clearHere's a modified version of your code that allows you to switch between different games:
+
+```javascript
+const games = {
+    dinosaur: {
+        name: 'Dinosaur',
+        init: function() {
+            console.log('Init Dinosaur...');
+            const canvas = document.createElement('canvas');
+            canvas.width = 500;
+            canvas.height = 300;
+            const context = canvas.getContext('2d');
+            document.getElementById('gameContainer').appendChild(canvas);
+            let dinosaurX = 20;
+            let dinosaurY = 200;
+            const dinosaurWidth = 50;
+            const dinosaurHeight = 50;
+            let dinosaurVelocity = 0;
+            const dinosaurJump = -15;
+            const dinosaurGravity = 0.5;
+            const groundY = 250;
+            let obstacles = [];
+
+            function clearGameContainer() {
+                const gameContainer = document.getElementById('gameContainer');
+                while (gameContainer.firstChild) {
+                    gameContainer.removeChild(gameContainer.firstChild);
+                }
+            }
+
+            function drawDinosaur() {
+                context.fillStyle = 'green';
+                context.fillRect(dinosaurX, dinosaurY, dinosaurWidth, dinosaurHeight);
+            }
+
+            function createObstacle() {
+                const obstacle = {
+                    x: 500,
+                    y: Math.floor(Math.random() * (groundY - obstacleHeight - 100)) + 100,
+                    width: obstacleWidth,
+                    height: obstacleHeight,
+                };
+                obstacles.push(obstacle);
+            }
+
+            function drawObstacles() {
+                obstacles.forEach(function(obstacle) {
+                    context.fillStyle = 'red';
+                    context.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                });
+            }
+
+            function updateDinosaur() {
+                if (dinosaurVelocity === 0) {
+                    createObstacle();
+                }
+                dinosaurVelocity += dinosaurGravity;
+                dinosaurY += dinosaurVelocity;
+                if (dinosaurY > groundY - dinosaurHeight) {
+                    dinosaurY = groundY - dinosaurHeight;
+                    dinosaurVelocity = 0;
+                }
+                obstacles.forEach(function(obstacle, index) {
+                    obstacle.x -= 5;
+                    if (obstacle.x + obstacle.width < 0) {
+                        obstacles.splice(index, 1);
+                    }
+                    if (
+                        dinosaurX + dinosaurWidth >= obstacle.x &&
+                        dinosaurX <= obstacle.x + obstacle.width &&
+                        (dinosaurY + dinosaurHeight >= obstacle.y || dinosaurY <= obstacle.y - 10)
+                    ) {
+                        alert('Game Over');
+                    }
+                });
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                drawDinosaur();
+                drawObstacles();
+            }
+
+            function jump() {
+                if (dinosaurVelocity === 0) {
+                    dinosaurVelocity = dinosaurJump;
+                }
+            }
+
+            document.addEventListener('keypress', function(event) {
+                if (event.keyCode === 32) {
+                    jump();
+                }
+            });
+
+            setInterval(updateDinosaur, 10);
+        },
+        render: function() {
+            console.log('Render Dinosaur...');
+        },
+    },
+    instagram: {
+        name: 'Instagram',
+        init: function() {
+            console.log('Init Instagram...');
+        },
+        render: function() {
+            console.log('Render Instagram...');
+            const gameContainer = document.getElementById('gameContainer');
+            const link = document.createElement('a');
+            link.href = 'https://www.instagram.com/suhailgames/';
+            link.textContent = 'Instagram';
+            gameContainer.appendChild(link);
+        },
+    },
+};
+
+const ticTacToe = {
+    name: 'Tic Tac Toe',
+    init: function() {
+        console.log('Init Tic Tac Toe...');
+        const board = Array(3).fill().map(() => Array(3).fill(''));
+        const turn = 'x';
+
+        function isBoardFull() {
+            return board.every(row => row.every(cell => cell !== ''));
+        }
+
+        function isThereWinner() {
+            const isRowWin = row => row.every(cell => cell === turn);
+            const isAnyRowWin = rows => rows.some(isRowWin);
+
+            return (
+                isAnyRowWin(board) ||
+                isAnyRowWin(board.map(row => row.slice().reverse())) ||
+                isAnyRowWin(board.map((row, index) => board.map(row2 => row2[index])))||
+                isAnyRowWin(board.map((row, index) => board.map(row2 => row2[row.length - 1 - index])))
+            );
+        }
+
+        function handleTurn() {
+            const coord = prompt('Enter row and column separated by space (e.g: "0 1")...').split(' ').map(Number);
+            if (board[coord[0]][coord[1]] !== '') {
+                alert('Please enter different coordinates...');
+                handleTurn();
+            } else {
+                board[coord[0]][coord[1]] = turn;
+                if (isThereWinner()) {
+                    alert(`Player ${turn} wins!`);
+                    clearGameContainer();
+                } else if (isBoardFull()) {
+                    alert('It is a draw!');
+                    clearGameContainer();
+                } else {
+                    turn === 'x' ? (turn = 'o') : (turn = 'x');
+                }
+            }
+        }
+
+        function drawBoard() {
+            const gameContainer = document.getElementById('gameContainer');
+            for (let row = 0; row < board.length; row++) {
+                const rowElement = document.createElement('div');
+                gameContainer.appendChild(rowElement);
+                board[row].forEach(cell => {
+                    const cellElement = document.createElement('span');
+                    cellElement.textContent = cell;
+                    rowElement.appendChild(cellElement);
+                });
+            }
+        }
+
+        function clearGameContainer() {
+            const gameContainer = document.getElementById('gameContainer');
+            while (gameContainer.firstChild) {
+                gameContainer.removeChild(gameContainer.firstChild);
+            }
+        }
+
+        handleTurn();
+        drawBoard();
+    },
+    render: function() {
+        console.log('Render Tic Tac Toe...');
+    },
+};
+
+const flappy = {
+    name: 'Flappy',
+    init: function() {
+        console.log('Init Flappy...');
+        const canvas = document.createElement('canvas');
+        canvas.width = 500;
+        canvas.height = 300;
+        const context = canvas.getContext('2d');
+        document.getElementById('gameContainer').appendChild(canvas);
+
+        let birdY = 200;
+        let birdVelocity = 0;
+        const birdWidth = 25;
+        const birdHeight = 25;
+        const groundY = 300;
+        let obstacles = [];
+
+        function createObstacle() {
+            const obstacle = {
+                x: 500,
+                y: Math.floor(Math.random() * (groundY - obstacleHeight - 100)) + 100,
+                width: obstacleWidth,
+                height: obstacleHeight,
+            };
+            obstacles.push(obstacle);
+        }
+
+        function drawBird() {
+            context.fillStyle = 'blue';
+            context.fillRect(20, birdY, birdWidth, birdHeight);
+        }
+
+        function drawObstacles() {
+            obstacles.forEach(function(obstacle) {
+                context.fillStyle = 'red';
+                context.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            });
+        }
+
+        function updateBird() {
+            if (birdVelocity === 0) {
+                createObstacle();
+            }
+            birdVelocity += 0.5;
+            birdY += birdVelocity;
+            if (birdY > groundY - birdHeight) {
+                birdY = groundY - birdHeight;
+                birdVelocity = 0;
+            }
+            obstacles.forEach(function(obstacle, index) {
+                obstacle.x -= 5;
+                if (obstacle.x + obstacle.width < 0) {
+                    obstacles.splice(index, 1);
+                }
+                if (
+                    birdX + birdWidth >= obstacle.x &&
+                    birdX <= obstacle.x + obstacle.width &&
+                    (birdY + birdHeight >= obstacle.y || birdY <= obstacle.y - 10)
+                ) {
+                    alert('Game Over');
+                }
+            });
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            drawBird();
+            drawObstacles();
+        }
+
+        function keyDown(event) {
+            if (event.keyCode === 32) {
+                birdVelocity = -15;
+            }
+        }
+
+        function keyUp(event) {
+            if (event.keyCode === 32) {
+                birdVelocity = 0;
+            }
+        }
+
+        document.addEventListener('keydown', keyDown);
+        document.addEventListener('keyup', keyUp);
+
+        setInterval(updateBird, 10);
+    },
+    render: function() {
+        console.log('Render Flappy...');
+    },
+};
+
+const buttons = {
+    'Dinosaur': 'dinosaur',
+    'Instagram': 'instagram',
+    'Tic Tac Toe': 'ticTacToe',
+    'Flappy': 'flappy',
+};
+
+const game = document.getElementById('game');
+
+game.addEventListener('click', function(event) {
+    const buttonText = event.target.textContent;
+    const whichGame = buttons[buttonText];
+
+    clearGameContainer();
+
+    if (whichGame === 'dinosaur' || whichGame === 'instagram' || whichGame === 'ticTacToe' || whichGame === 'flappy') {
+        console.log(`Starting ${whichGame}...`);
+        clearGameContainer();
+        games[whichGame].init();
+        games[whichGame].render();
+    }
+});
+
+function clearGameContainer() {
+    const gameContainer = document.getElementById('gameContainer');
+    while (gameContainer.firstChild) {
+        gameContainer.removeChild(gameContainer.firstChild);
+    }
+}
+
+console.log('Initializing...');
+games.instagram.init();
+games.instagram.render();

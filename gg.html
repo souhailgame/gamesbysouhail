@@ -1,0 +1,725 @@
+
+JavaScript:
+
+<script>
+
+const canvas = document.createElement('canvas');
+
+const context = canvas.getContext('2d');
+
+canvas.width = 400;
+
+canvas.height = 400;
+
+document.body.appendChild(canvas);
+
+const bird = {
+
+x: 50,
+
+y: 100,
+
+width: 20,
+
+height: 20,
+
+vy: 0,
+
+speed: 10
+
+};
+
+const obstacles = [];
+
+const obstacleWidth = 60;
+
+const obstacleHeight = 100;
+
+const groundY = 340;
+
+function draw() {
+
+context.clearRect(0, 0, canvas.width, canvas.height);
+
+const birdImage = new Image();
+
+birdImage.src = 'https://cdn.iconscout.com/icon/free/png-256/bird-flappy-1005308-904538.png';
+
+birdImage.onload = function() {
+
+context.drawImage(birdImage, bird.x, bird.y, bird.width, bird.height);
+
+};
+
+obstacles.forEach(function(obstacle) {
+
+const obstacleImage = new Image();
+
+obstacleImage.src = 'https://cdn.iconscout.com/icon/free/png-256/obstacle-283-458312.png';
+
+obstacleImage.onload = function() {
+
+context.drawImage(obstacleImage, obstacle.x, obstacle.y, obstacleWidth, obstacleHeight);
+
+};
+
+});
+
+bird.y += bird.vy;
+
+bird.y += bird.vy;
+
+if (bird.y + bird.height > groundY) {
+
+bird.y = groundY - bird.height;
+
+bird.vy = 0;
+
+}
+
+if (bird.y < 0) {
+
+bird.y = 0;
+
+bird.vy = 0;
+
+}
+
+if (bird.vy < bird.speed) {
+
+bird.vy += 0.1;
+
+} else {
+
+bird.vy -= bird.speed;
+
+}
+
+if (Math.random() < 0.02) {
+
+obstacles.push({
+
+x: canvas.width,
+
+y: Math.floor(Math.random() \* (groundY - obstacleHeight - 100)) + 100
+
+});
+
+}
+
+obstacles.forEach(function(obstacle) {
+
+obstacle.x -= 3;
+
+if (obstacle.x + obstacleWidth < 0) {
+
+obstacles.splice(obstacles.indexOf(obstacle), 1);
+
+}
+
+if (
+
+bird.x < obstacle.x + obstacleWidth &&
+bird.x + bird.width > obstacle.x &&
+bird.y < obstacle.y &&
+bird.y + bird.height > obstacle.y
+
+) {
+
+alert('Game Over');
+
+}
+
+});
+
+requestAnimationFrame(draw);
+
+</script>
+
+-------------------------------------------------------
+
+Hi there!
+
+Thank you for your request for help with coding a website with the name Suhail Games, and its interface consisting of three games: the first being Tic Tac Toe white ia, the second being Flappy, and the third being the Jumping Dinosaur game.
+
+I have created a sample code for you in HTML, CSS, and JavaScript that you can use as a starting point for your website. You will need to replace the image sources in `draw()` function with the actual images you want to use.
+
+Here's the code:
+
+HTML:
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+ <meta charset="UTF-8">
+
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+ <title>Suhail Games</title>
+
+ <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+ <header>
+
+ <h1>Suhail Games</h1>
+
+ </header>
+
+ <main>
+
+ <section id="ticTacToe">
+
+ <h2>Tic Tac Toe</h2>
+
+ <p>
+
+ AI opponent coming soon!
+
+ </p>
+
+ <p>
+
+ <a href="https://www.instagram.com/shouhailyt/" target="\_blank"
+
+ >
+
+ Follow us on Instagram
+
+ </a>
+
+ </p>
+
+ </section>
+
+ <section id="flappy">
+
+ <h2>Flappy</h2>
+
+ <p>
+
+ Coming soon!
+
+ </p>
+
+ </section>
+
+ <section id="jumpingDinosaur">
+
+ <h2>Jumping Dinosaur</h2>
+
+ <p>
+
+ Coming soon!
+
+ </p>
+
+ </section>
+
+ </main>
+
+</body>
+
+</html>
+
+CSS:
+
+<style>
+
+body {
+
+ font-family: Arial, sans-serif;
+
+}
+
+header {
+
+ background-color: #4CAF50;
+
+ color: white;
+
+ padding: 1rem;
+
+}
+
+main {
+
+ display: flex;
+
+ justify-content: space-around;
+
+ align-items: center;
+
+ flex-wrap: wrap;
+
+ gap: 2rem;
+
+ margin-top: 2rem;
+
+}
+
+section {
+
+ flex: 1 0 300px;
+
+ background-color: #fff;
+
+ border-radius: 5px;
+
+ box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+ padding: 1.5rem;
+
+ text-align: center;
+
+}
+
+section h2 {
+
+ margin-top: 0;
+
+}
+
+section p {
+
+ margin-bottom: 0;
+
+}
+
+</style>
+
+JavaScript:
+
+<script>
+
+const canvas = document.createElement('canvas');
+
+const context = canvas.getContext('2d');
+
+canvas.width = 400;
+
+canvas.height = 400;
+
+document.body.appendChild(canvas);
+
+const bird = {
+
+x: 50,
+
+y: 100,
+
+width: 20,
+
+height: 20,
+
+vy: 0,
+
+speed: 10
+
+};
+
+const obstacles = [];
+
+const obstacleWidth = 60;
+
+const obstacleHeight = 100;
+
+const groundY = 340;
+
+function draw() {
+
+context.clearRect(0, 0, canvas.width, canvas.height);
+
+const birdImage = new Image();
+
+birdImage.src = 'https://cdn.iconscout.com/icon/free/png-256/bird-flappy-1005308-904538.png';
+
+birdImage.onload = function() {
+
+context.drawImage(birdImage, bird.x, bird.y, bird.width, bird.height);
+
+};
+
+obstacles.forEach(function(obstacle) {
+
+const obstacleImage = new Image();
+
+obstacleImage.src = 'https://cdn.iconscout.com/icon/free/png-256/obstacle-283-458312.png';
+
+obstacleImage.onload = function() {
+
+context.drawImage(obstacleImage, obstacle.x, obstacle.y, obstacleWidth, obstacleHeight);
+
+};
+
+});
+
+bird.y += bird.vy;
+
+bird.y += bird.vy;
+
+if (bird.y + bird.height > groundY) {
+
+bird.y = groundY - bird.height;
+
+bird.vy = 0;
+
+}
+
+if (bird.y < 0) {
+
+bird.y = 0;
+
+bird.vy = 0;
+
+}
+
+if (bird.vy < bird.speed){
+
+bird.vy += 0.1;
+
+} else {
+
+bird.vy -= bird.speed;
+
+}
+
+if (Math.random() < 0.02) {
+
+obstacles.push({
+
+x: canvas.width,
+
+y: Math.floor(Math.random() \* (groundY - obstacleHeight - 100)) + 10
+
+});
+
+}
+
+obstacles.forEach(function(obstacle) {
+
+obstacle.x -= 3;
+
+if (obstacle.x + obstacleWidth < 0) {
+
+obstacles.splice(obstacles.indexOf(obstacle), 1);
+
+}
+
+if (
+
+bird.x < obstacle.x + obstacleWidth &&
+bird.x + bird.width > obstacle.x &&
+bird.y < obstacle.y &&
+bird.y + bird.height > obstacle.y
+
+) {
+
+alert('Game Over');
+
+}
+
+});
+
+requestAnimationFrame(draw);
+
+</script>
+
+I hope this helps you get started! Let me know if you have any questions or need further assistance.
+
+Best regards,
+
+[Your Name]
+
+Note:
+
+Please replace [Your Name] with your actual name before sending the response.
+
+Regarding your request to delete the Instasgram links, I assume you meant to remove the Instagram link from the `ticTacToe` section. I have updated the HTML code accordingly.
+
+If you meant to remove any other links or references to Instagram, please let me know and I will make the necessary changes.
+
+Thank you.
+
+Hi there!
+
+Thank you for your request for help with coding a website with the name Suhail Games, and its interface consisting of three games: the first being Tic Tac Toe white ia, the second being Flappy, and the third being the Jumping Dinosaur game.
+
+I have created a sample code for you in HTML, CSS, and JavaScript that you can use as a starting point for your website.
+
+HTML:
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+ <meta charset="UTF-8">
+
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+ <title>Suhail Games</title>
+
+ <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+ <header>
+
+ <h1>Suhail Games</h1>
+
+ </header>
+
+ <main>
+
+ <section id="ticTacToe">
+
+ <h2>Tic Tac Toe</h2>
+
+ <p>
+
+ AI opponent coming soon!
+
+ </p>
+
+ </section>
+
+ <section id="flappy">
+
+ <h2>Flappy</h2>
+
+ <p>
+
+ Coming soon!
+
+ </p>
+
+ </section>
+
+ <section id="jumpingDinosaur">
+
+ <h2>Jumping Dinosaur</h2>
+
+ <p>
+
+ Coming soon!
+
+ </p>
+
+ </section>
+
+ </main>
+
+</body>
+
+</html>
+
+CSS:
+
+<style>
+
+body {
+
+ font-family: Arial, sans-serif;
+
+}
+
+header {
+
+ background-color: #4CAF50;
+
+ color: white;
+
+ padding: 1rem;
+
+}
+
+main {
+
+ display: flex;
+
+ justify-content: space-around;
+
+ align-items: center;
+
+ flex-wrap: wrap;
+
+ gap: 2rem;
+
+ margin-top: 2rem;
+
+}
+
+section {
+
+ flex: 1 0 300px;
+
+ background-color: #fff;
+
+ border-radius: 5px;
+
+ box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+ padding: 1.5rem;
+
+ text-align: center;
+
+}
+
+section h2 {
+
+ margin-top: 0;
+
+}
+
+section p {
+
+ margin-bottom: 0;
+
+}
+
+</style>
+
+JavaScript:
+
+<script>const canvas = document.createElement('canvas');
+
+const context = canvas.getContext('2d');
+
+canvas.width = 400;
+
+canvas.height = 400;
+
+document.body.appendChild(canvas);
+
+const bird = {
+
+x: 50,
+
+y: 100,
+
+width: 20,
+
+height: 20,
+
+vy: 0,
+
+speed: 10
+
+};
+
+const obstacles = [];
+
+const obstacleWidth = 60;
+
+const obstacleHeight = 100;
+
+const groundY = 340;
+
+function draw() {
+
+context.clearRect(0, 0, canvas.width, canvas.height);
+
+const birdImage = new Image();
+
+birdImage.src = '<https://cdn.iconscout.com/icon/free/png-256/bird-flappy-1005308-904538.png>';
+
+birdImage.onload = function() {
+
+context.drawImage(birdImage, bird.x, bird.y, bird.width, bird.height);
+
+};
+
+obstacles.forEach(function(obstacle) {
+
+const obstacleImage = new Image();
+
+obstacleImage.src = '<https://cdn.iconscout.com/icon/free/png-256/obstacle-283-458312.png>';
+
+obstacleImage.onload = function() {
+
+context.drawImage(obstacleImage, obstacle.x, obstacle.y, obstacleWidth, obstacleHeight);
+
+};
+
+});
+
+bird.y += bird.vy;
+
+bird.y += bird.vy;
+
+if (bird.y + bird.height > groundY) {
+
+bird.y = groundY - bird.height;
+
+bird.vy = 0;
+
+}
+
+if (bird.y < 0
+```The provided code is for a Flappy Bird game using HTML, CSS, and JavaScript. The game is not yet complete, as indicated by the "Coming soon!" messages in the HTML sections. The game currently includes a bird that can be controlled by the user to jump over obstacles. The bird's position is updated using the `bird.y` variable, which is incremented by the `bird.vy` (vertical speed) value. The bird's vertical speed is updated using the `bird.speed` value.
+
+The obstacles are represented by an array of objects, each with an `x` and `y` position. The obstacles are drawn using the `drawImage()` method of the `CanvasRenderingContext2D` object.
+
+The game does not yet include an AI opponent or a mechanism for generating new obstacles. To complete the game, you would need to implement these features. Additionally, you would need to add collision detection to determine when the bird collides with an obstacle or the ground. If a collision is detected, the game should be reset, and the user should be informed of the result.
+
+Here is an example of how you might implement the AI opponent and obstacle generation:
+
+```javascript
+function generateObstacle() {
+  const obstacle = {
+    x: canvas.width,
+    y: Math.random() * (canvas.height - obstacleHeight) + obstacleHeight / 2,
+  };
+  obstacles.push(obstacle);
+}
+
+function updateObstacles() {
+  obstacles.forEach(function(obstacle) {
+    obstacle.x -= 10;
+  });
+
+  if (obstacles[0].x + obstacleWidth < 0) {
+    obstacles.shift();
+  }
+
+  if (obstacles.length < 2) {
+    generateObstacle();
+  }
+}
+
+function checkCollision() {
+  for (let i = 0; i < obstacles.length; i++) {
+    const obstacle = obstacles[i];
+    if (bird.x + bird.width > obstacle.x && bird.x < obstacle.x + obstacleWidth && bird.y + bird.height > obstacle.y && bird.y < obstacle.y + obstacleHeight) {
+      return true;
+    }
+  }
+  if (bird.y + bird.height > groundY) {
+    return true;
+  }
+  return false;
+}
+
+function gameLoop() {
+  updateObstacles();
+  bird.vy += 1;
+  draw();
+  if (checkCollision()) {
+    alert('Game over!');
+    bird.y = 100;
+    bird.vy = 0;
+  }
+  requestAnimationFrame(gameLoop);
+}
+
+gameLoop();

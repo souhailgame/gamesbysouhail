@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="480" height="320"></canvas>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+    const bird = {
+      x: 50,
+      y: 100,
+      width: 30,
+      height: 30,
+      vy: 0,
+      speed: 5,
+    };
+
+    const obstacleWidth = 30;
+    const obstacleHeight = 100;
+    const groundY = canvas.height - 50;
+
+    const obstacles = [];
+
+    function generateObstacle() {
+      const obstacle = {
+        x: canvas.width,
+        y: Math.random() * (canvas.height - obstacleHeight) + obstacleHeight / 2,
+      };
+      obstacles.push(obstacle);
+    }
+
+    function updateObstacles() {
+      obstacles.forEach(function(obstacle) {
+        obstacle.x -= 10;
+      });
+
+      if (obstacles[0].x + obstacleWidth < 0) {
+        obstacles.shift();
+      }
+
+      if (obstacles.length < 2) {
+        generateObstacle();
+      }
+    }
+
+    function draw() {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
+      const birdImage = new Image();
+      birdImage.src = 'https://cdn.iconscout.com/icon/free/png-256/bird-283-458311.png';
+      birdImage.onload = function() {
+        context.drawImage(birdImage, bird.x, bird.y, bird.width, bird.height);
+      };
+
+      obstacles.forEach(function(obstacle) {
+        const obstacleImage = new Image();
+        obstacleImage.src = 'https://cdn.iconscout.com/icon/free/png-256/obstacle-283-458312.png';
+        obstacleImage.onload = function() {
+          context.drawImage(obstacleImage, obstacle.x, obstacle.y, obstacleWidth, obstacleHeight);
+        };
+      });
+
+      bird.y += bird.vy;
+      bird.vy += bird.speed;
+
+      if (bird.y + bird.height > groundY) {
+        bird.y = groundY - bird.height;
+        bird.vy = 0;
+      }
+    }
+
+    function checkCollision() {
+      for (let i = 0; i < obstacles.length; i++) {
+        const obstacle = obstacles[i];
+        if (bird.x + bird.width > obstacle.x && bird.x < obstacle.x + obstacleWidth && bird.y + bird.height > obstacle.y && bird.y < obstacle.y + obstacleHeight) {
+          return true;
+        }
+      }
+      if (bird.y + bird.height > groundY) {
+        return true;
+      }
+      return false;
+    }
+
+    function gameLoop() {
+      updateObstacles();
+      draw();
+      if (checkCollision()) {
+        alert('Game over!');
+        bird.y = 100;
+        bird.vy = 0;
+      }
+      requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === ' ') {
+        bird.vy = -bird.speed;
+      }
+    });
+  </script>
+</body>
+</html>
